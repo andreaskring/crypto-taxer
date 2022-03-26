@@ -6,13 +6,26 @@ from app.parser import _csv_lines_to_dicts
 
 
 class TestCsvLinesToDicts(unittest.TestCase):
-    def test_return_dicts(self):
-        lines = [
-            "key1,key2,key3",
-            "value1,value2,value3",
-            "value4,value5,value6",
-        ]
 
+    @parameterized.expand(
+        [
+            (
+                [
+                    "key1,key2,key3",
+                    "value1,value2,value3",
+                    "value4,value5,value6",
+                ],
+            ),
+            (
+                [
+                    '"key1","key2","key3"',
+                    '"value1","value2","value3"',
+                    "value4,value5,value6",
+                ],
+            )
+        ]
+    )
+    def test_return_dicts(self, lines):
         expected = [
             {
                 "key1": "value1",
@@ -26,4 +39,4 @@ class TestCsvLinesToDicts(unittest.TestCase):
             }
         ]
 
-        self.assertEquals(expected, _csv_lines_to_dicts(lines))
+        self.assertEqual(expected, _csv_lines_to_dicts(lines))
