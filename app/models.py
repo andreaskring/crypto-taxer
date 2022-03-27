@@ -24,4 +24,4 @@ class LedgerEntity(BaseModel):
     asset: str
     amount: float
     fee: float
-    balance: float
+    balance: Optional[float] = None

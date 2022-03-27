@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime
 
-from app.models import LedgerEntity, EntityType
+from app.models import EntityType
 from app.parser import _csv_lines_to_dicts, csv_to_ledger_entities, _sanitize_csv_dicts
 
 
@@ -61,7 +61,7 @@ class TestSanitizeCsvDicts(unittest.TestCase):
 
     def test_set_balance_to_zero_if_empty_string(self):
         dicts_with_balance = [{'balance': ''}]
-        expected = [{"balance": 0}]
+        expected = [{"balance": None}]
         self.assertEqual(_sanitize_csv_dicts(dicts_with_balance), expected)
 
 
@@ -87,7 +87,7 @@ class TestCsvToLedgerEntities(unittest.TestCase):
         assert "ZEUR" == entity0.asset
         assert 250.0 == entity0.amount
         assert 9.63 == entity0.fee
-        assert 0.0 == entity0.balance
+        assert entity0.balance is None
 
         entity1 = ledger_entities[1]
         assert "LU6M2Y-SW73C-7VIQMS" == entity1.txid

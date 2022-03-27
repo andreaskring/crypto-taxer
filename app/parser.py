@@ -6,11 +6,7 @@ from app.models import LedgerEntity
 
 def _csv_lines_to_dicts(csv: List[str]) -> List[Dict[str, Any]]:
     keys = csv[0].split(",")
-    #keys = list(map(remove_quotes, keys))
-
     values = map(lambda line: line.split(","), csv[1:])
-    #values = [map(remove_quotes, value) for value in values]
-
     dicts = [dict(zip(keys, value)) for value in values]
     return dicts
 
@@ -22,7 +18,7 @@ def _sanitize_csv_dicts(dicts: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     def fix_empty_balance(d: Dict[str, Any]) -> Dict[str, Any]:
         sanitized_dict = deepcopy(d)
         if sanitized_dict.get("balance") == '':
-            sanitized_dict["balance"] = 0
+            sanitized_dict["balance"] = None
         return sanitized_dict
 
     # Remove quotes from keys and values in dicts
