@@ -18,9 +18,15 @@ def sell(
     profit: float = 0.0
 ) -> Tuple[Deque[Transaction], float]:
     buy_transaction = asset_queue.popleft()
-    amount = buy_transaction.amount
-    profit = (sell_transaction.unit_price - buy_transaction.unit_price) * amount
-    return deque(), profit
+    amount_diff = buy_transaction.amount + sell_transaction.amount
+    assert amount_diff >= 0
+    profit = (sell_transaction.unit_price - buy_transaction.unit_price) * abs(sell_transaction.amount)
+
+    updated_transaction = Transaction(amount=amount_diff, unit_price=buy_transaction.unit_price)
+    if amount_diff > 0:
+        asset_queue.appendleft(updated_transaction)
+
+    return asset_queue, profit
 
 
 def process_portfolio(
