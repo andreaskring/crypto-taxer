@@ -25,3 +25,8 @@ class LedgerEntity(BaseModel):
     amount: float
     fee: float
     balance: Optional[float] = None
+
+
+class Transaction(BaseModel):
+    amount: float
+    unit_price: float
