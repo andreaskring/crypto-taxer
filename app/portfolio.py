@@ -19,12 +19,27 @@ def sell(
 ) -> Tuple[Deque[Transaction], float]:
     buy_transaction = asset_queue.popleft()
     amount_diff = buy_transaction.amount + sell_transaction.amount
-    assert amount_diff >= 0
-    profit = (sell_transaction.unit_price - buy_transaction.unit_price) * abs(sell_transaction.amount)
+    amount_sold = min(buy_transaction.amount, abs(sell_transaction.amount))
 
-    updated_transaction = Transaction(amount=amount_diff, unit_price=buy_transaction.unit_price)
-    if amount_diff > 0:
-        asset_queue.appendleft(updated_transaction)
+    profit += (sell_transaction.unit_price - buy_transaction.unit_price) * amount_sold
+
+    if amount_diff >= 0:
+        if amount_diff > 0:
+            updated_transaction = Transaction(
+                amount=amount_diff,
+                unit_price=buy_transaction.unit_price
+            )
+            asset_queue.appendleft(updated_transaction)
+    else:
+        next_sell_transaction = Transaction(
+            amount=amount_diff,
+            unit_price=sell_transaction.unit_price
+        )
+        return sell(
+            asset_queue,
+            next_sell_transaction,
+            profit
+        )
 
     return asset_queue, profit
 
