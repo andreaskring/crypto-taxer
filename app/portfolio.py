@@ -15,33 +15,49 @@ def group_by_refid(entities: List[LedgerEntity]) -> List[List[LedgerEntity]]:
 def sell(
     asset_queue: Deque[Transaction],
     sell_transaction: Transaction,
-    profit: float = 0.0
 ) -> Tuple[Deque[Transaction], float]:
-    buy_transaction = asset_queue.popleft()
-    amount_diff = buy_transaction.amount + sell_transaction.amount
-    amount_sold = min(buy_transaction.amount, abs(sell_transaction.amount))
-
-    profit += (sell_transaction.unit_price - buy_transaction.unit_price) * amount_sold
-
-    if amount_diff >= 0:
-        if amount_diff > 0:
-            updated_transaction = Transaction(
-                amount=amount_diff,
+    amount_left_to_sell = abs(sell_transaction.amount)
+    profit = 0
+    while amount_left_to_sell > 0:
+        buy_transaction = asset_queue.popleft()
+        print(buy_transaction)
+        amount_sold = min(buy_transaction.amount, amount_left_to_sell)
+        print("amount_sold", amount_sold)
+        profit += (sell_transaction.unit_price - buy_transaction.unit_price) * amount_sold
+        print("profit", profit)
+        amount_left_to_sell -= amount_sold
+        print("amount_left_to_sell", amount_left_to_sell)
+        print("len", len(asset_queue))
+        if amount_sold < buy_transaction.amount:
+            print("hurra")
+            updated_buy_transaction = Transaction(
+                amount=buy_transaction.amount - amount_sold,
                 unit_price=buy_transaction.unit_price
             )
-            asset_queue.appendleft(updated_transaction)
-    else:
-        next_sell_transaction = Transaction(
-            amount=amount_diff,
-            unit_price=sell_transaction.unit_price
-        )
-        return sell(
-            asset_queue,
-            next_sell_transaction,
-            profit
-        )
+            asset_queue.appendleft(updated_buy_transaction)
+        print()
 
     return asset_queue, profit
+
+    # if amount_diff >= 0:
+    #     if amount_diff > 0:
+    #         updated_transaction = Transaction(
+    #             amount=amount_diff,
+    #             unit_price=buy_transaction.unit_price
+    #         )
+    #         asset_queue.appendleft(updated_transaction)
+    # else:
+    #     next_sell_transaction = Transaction(
+    #         amount=amount_diff,
+    #         unit_price=sell_transaction.unit_price
+    #     )
+    #     return sell(
+    #         asset_queue,
+    #         next_sell_transaction,
+    #         profit
+    #     )
+    #
+    # return asset_queue, profit
 
 
 def process_portfolio(

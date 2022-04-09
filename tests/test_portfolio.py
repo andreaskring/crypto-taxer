@@ -48,7 +48,7 @@ class TestSell(unittest.TestCase):
     def test_sell_amount_larger_than_one_transaction(self):
         # Arrange
         transaction1 = Transaction(amount=10.0, unit_price=20.0)
-        transaction2 = Transaction(amount=10.0, unit_price=30.0)
+        transaction2 = Transaction(amount=20.0, unit_price=30.0)
         transaction3 = Transaction(amount=-15.0, unit_price=40.0)
         asset_queue = deque()
         asset_queue.append(transaction1)
@@ -59,5 +59,26 @@ class TestSell(unittest.TestCase):
 
         # Assert
         assert len(updated_queue) == 1
-        assert updated_queue.popleft() == Transaction(amount=5.0, unit_price=30.0)
+        assert updated_queue.popleft() == Transaction(amount=15.0, unit_price=30.0)
         assert profit == 250.0
+
+    def test_sell_amount_larger_than_two_transactions(self):
+        # Arrange
+        transaction1 = Transaction(amount=10.0, unit_price=20.0)
+        transaction2 = Transaction(amount=10.0, unit_price=30.0)
+        transaction3 = Transaction(amount=15.0, unit_price=40.0)
+        transaction4 = Transaction(amount=-30.0, unit_price=50.0)
+        asset_queue = deque()
+        asset_queue.append(transaction1)
+        asset_queue.append(transaction2)
+        asset_queue.append(transaction3)
+
+        # Act
+        updated_queue, profit = sell(asset_queue, transaction4)
+
+        # Assert
+        assert len(updated_queue) == 1
+        assert updated_queue.popleft() == Transaction(amount=5.0, unit_price=40.0)
+        assert profit == 600.0
+
+# Sell with a loss
