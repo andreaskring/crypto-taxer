@@ -53,11 +53,17 @@ class TestSell(unittest.TestCase):
         assert profit == expected_profit
         assert loss == expected_loss
 
-    def test_sell_amount_larger_than_one_transaction(self):
+    @parameterized.expand(
+        [
+            (40.0, 250.0, 0),
+            (15.0, 0, 125.0),
+        ]
+    )
+    def test_sell_amount_larger_than_one_transaction(self, sell_unit_price, expected_profit, expected_loss):
         # Arrange
         transaction1 = Transaction(amount=10.0, unit_price=20.0)
         transaction2 = Transaction(amount=20.0, unit_price=30.0)
-        transaction3 = Transaction(amount=-15.0, unit_price=40.0)
+        transaction3 = Transaction(amount=-15.0, unit_price=sell_unit_price)
         asset_queue = deque()
         asset_queue.append(transaction1)
         asset_queue.append(transaction2)
@@ -68,14 +74,21 @@ class TestSell(unittest.TestCase):
         # Assert
         assert len(updated_queue) == 1
         assert updated_queue.popleft() == Transaction(amount=15.0, unit_price=30.0)
-        assert profit == 250.0
+        assert profit == expected_profit
+        assert loss == expected_loss
 
-    def test_sell_amount_larger_than_two_transactions(self):
+    @parameterized.expand(
+        [
+            (50.0, 600.0, 0),
+            (5.0, 0, 750.0)
+        ]
+    )
+    def test_sell_amount_larger_than_two_transactions(self, sell_unit_price, expected_profit, expected_loss):
         # Arrange
         transaction1 = Transaction(amount=10.0, unit_price=20.0)
         transaction2 = Transaction(amount=10.0, unit_price=30.0)
         transaction3 = Transaction(amount=15.0, unit_price=40.0)
-        transaction4 = Transaction(amount=-30.0, unit_price=50.0)
+        transaction4 = Transaction(amount=-30.0, unit_price=sell_unit_price)
         asset_queue = deque()
         asset_queue.append(transaction1)
         asset_queue.append(transaction2)
@@ -87,4 +100,6 @@ class TestSell(unittest.TestCase):
         # Assert
         assert len(updated_queue) == 1
         assert updated_queue.popleft() == Transaction(amount=5.0, unit_price=40.0)
-        assert profit == 600.0
+        assert profit == expected_profit
+        assert loss == expected_loss
+
