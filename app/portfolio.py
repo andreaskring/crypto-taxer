@@ -1,10 +1,9 @@
 from collections import deque
-from copy import deepcopy
 from itertools import groupby
 from typing import List, Tuple, Deque
 
 from app.models import LedgerEntity, Transaction
-from app.parser import get_asset_types, EURO_KEYS
+from app.parser import EURO_KEYS
 
 
 def group_by_refid(entities: List[LedgerEntity]) -> List[List[LedgerEntity]]:
@@ -23,26 +22,21 @@ def sell(
 
     while amount_left_to_sell > 0:
         buy_transaction = asset_queue.popleft()
-        print(buy_transaction)
         amount_sold = min(buy_transaction.amount, amount_left_to_sell)
-        print("amount_sold", amount_sold)
+
         profit_or_loss = (sell_transaction.unit_price - buy_transaction.unit_price) * amount_sold
         if profit_or_loss >= 0:
             profit += profit_or_loss
         else:
             loss += abs(profit_or_loss)
-        print("profit", profit)
+
         amount_left_to_sell -= amount_sold
-        print("amount_left_to_sell", amount_left_to_sell)
-        print("len", len(asset_queue))
         if amount_sold < buy_transaction.amount:
-            print("hurra")
             updated_buy_transaction = Transaction(
                 amount=buy_transaction.amount - amount_sold,
                 unit_price=buy_transaction.unit_price
             )
             asset_queue.appendleft(updated_buy_transaction)
-        print()
 
     return asset_queue, profit, loss
 
