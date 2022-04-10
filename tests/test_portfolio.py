@@ -13,7 +13,6 @@ class TestSell(unittest.TestCase):
         [
             (30.0, 100.0),
             (40.0, 200.0),
-            (15.0, -50.0)
         ]
     )
     def test_sell_all(self, sell_unit_price, expected_profit):
@@ -24,7 +23,7 @@ class TestSell(unittest.TestCase):
         asset_queue.append(transaction1)
 
         # Act
-        updated_queue, profit = sell(asset_queue, transaction2)
+        updated_queue, profit, loss = sell(asset_queue, transaction2)
 
         # Assert
         assert len(updated_queue) == 0
@@ -38,7 +37,7 @@ class TestSell(unittest.TestCase):
         asset_queue.append(transaction1)
 
         # Act
-        updated_queue, profit = sell(asset_queue, transaction2)
+        updated_queue, profit, loss = sell(asset_queue, transaction2)
 
         # Assert
         assert len(updated_queue) == 1
@@ -55,7 +54,7 @@ class TestSell(unittest.TestCase):
         asset_queue.append(transaction2)
 
         # Act
-        updated_queue, profit = sell(asset_queue, transaction3)
+        updated_queue, profit, loss = sell(asset_queue, transaction3)
 
         # Assert
         assert len(updated_queue) == 1
@@ -74,11 +73,24 @@ class TestSell(unittest.TestCase):
         asset_queue.append(transaction3)
 
         # Act
-        updated_queue, profit = sell(asset_queue, transaction4)
+        updated_queue, profit, loss = sell(asset_queue, transaction4)
 
         # Assert
         assert len(updated_queue) == 1
         assert updated_queue.popleft() == Transaction(amount=5.0, unit_price=40.0)
         assert profit == 600.0
 
-# Sell with a loss
+    def test_sell_all_with_loss(self):
+        # Arrange
+        transaction1 = Transaction(amount=10.0, unit_price=20.0)
+        transaction2 = Transaction(amount=-10.0, unit_price=15.0)
+        asset_queue = deque()
+        asset_queue.append(transaction1)
+
+        # Act
+        updated_queue, profit, loss = sell(asset_queue, transaction2)
+
+        # Assert
+        assert len(updated_queue) == 0
+        assert profit == 0
+        assert loss == 50.0
