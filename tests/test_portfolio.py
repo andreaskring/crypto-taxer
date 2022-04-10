@@ -94,3 +94,19 @@ class TestSell(unittest.TestCase):
         assert len(updated_queue) == 0
         assert profit == 0
         assert loss == 50.0
+
+    def test_sell_amount_smaller_than_one_transaction_with_loss(self):
+        # Arrange
+        transaction1 = Transaction(amount=10.0, unit_price=20.0)
+        transaction2 = Transaction(amount=-7.0, unit_price=15.0)
+        asset_queue = deque()
+        asset_queue.append(transaction1)
+
+        # Act
+        updated_queue, profit, loss = sell(asset_queue, transaction2)
+
+        # Assert
+        assert len(updated_queue) == 1
+        assert updated_queue.popleft() == Transaction(amount=3.0, unit_price=20.0)
+        assert profit == 0
+        assert loss == 35.0
