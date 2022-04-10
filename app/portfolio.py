@@ -65,6 +65,9 @@ def process_portfolio(
             portfolio[eg[1].asset].append(transaction)
         else:
             # Selling asset
-            pass
+            coin_amount = eg[0].amount
+            unit_price = abs(eg[1].amount) / eg[0].amount
+            sell_transaction = Transaction(amount=coin_amount, unit_price=unit_price)
+            sell(portfolio[eg[0].asset], sell_transaction)
 
     return portfolio
