@@ -126,3 +126,4 @@ class TestSell(unittest.TestCase):
         assert loss == 250.0
 
 # Test fees
+# Error when selling more assets than available
