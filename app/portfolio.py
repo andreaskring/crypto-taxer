@@ -1,5 +1,6 @@
 from collections import deque
 from itertools import groupby
+from pprint import pprint
 from typing import List, Tuple, Deque
 
 from app.models import LedgerEntity, Transaction
@@ -46,6 +47,8 @@ def process_portfolio(
     assert_types: Tuple[str]
 ):
     portfolio = {asset: deque() for asset in assert_types}
+    profit = {asset: 0 for asset in assert_types}
+    loss = {asset: 0 for asset in assert_types}
 
     def assets_in_group_different(entity_group) -> bool:
         return not (
@@ -55,6 +58,7 @@ def process_portfolio(
 
     egs = filter(assets_in_group_different, entity_groups)
     for eg in egs:
+        # pprint(eg)
         assert len(eg) == 2, "More than two entities in transaction"
         if eg[0].asset in EURO_KEYS:
             # Buying asset
@@ -65,9 +69,19 @@ def process_portfolio(
             portfolio[eg[1].asset].append(transaction)
         else:
             # Selling asset
+            asset = eg[0].asset
             coin_amount = eg[0].amount
-            unit_price = abs(eg[1].amount) / eg[0].amount
+            unit_price = abs(eg[1].amount) / abs(eg[0].amount)
             sell_transaction = Transaction(amount=coin_amount, unit_price=unit_price)
-            sell(portfolio[eg[0].asset], sell_transaction)
+            _, _profit, _loss = sell(portfolio[asset], sell_transaction)
+            profit[asset] += _profit
+            loss[asset] += _loss
 
-    return portfolio
+        if eg[0].asset == "INJ" or eg[1].asset == "INJ":
+            print(30*"-")
+            pprint(portfolio)
+            print("profit:", profit)
+            print("loss:", loss)
+            input()
+
+    return portfolio, profit, loss

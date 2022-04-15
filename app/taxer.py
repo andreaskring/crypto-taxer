@@ -19,5 +19,7 @@ if __name__ == "__main__":
     assets = get_asset_types(entities)
     # print(assets)
 
-    p = process_portfolio(l, assets)
+    p, profit, loss = process_portfolio(l, assets)
     pprint(p)
+    print("profit:", profit)
+    print("loss:", loss)
