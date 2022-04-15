@@ -63,21 +63,22 @@ def process_portfolio(
         if eg[0].asset in EURO_KEYS:
             # Buying asset
             coin_amount = eg[1].amount
+            fee = eg[1].fee
             unit_price = abs(eg[0].amount) / eg[1].amount
-            transaction = Transaction(amount=coin_amount, unit_price=unit_price)
+            transaction = Transaction(amount=coin_amount - fee, unit_price=unit_price)
 
             portfolio[eg[1].asset].append(transaction)
         else:
             # Selling asset
             asset = eg[0].asset
             coin_amount = eg[0].amount
-            unit_price = abs(eg[1].amount) / abs(eg[0].amount)
+            unit_price = eg[1].amount / abs(eg[0].amount)
             sell_transaction = Transaction(amount=coin_amount, unit_price=unit_price)
             _, _profit, _loss = sell(portfolio[asset], sell_transaction)
             profit[asset] += _profit
             loss[asset] += _loss
 
-        coin_to_watch = "MOVR"
+        coin_to_watch = "INJ"
         if eg[0].asset == coin_to_watch or eg[1].asset == coin_to_watch:
             print(30*"-")
             pprint(portfolio)

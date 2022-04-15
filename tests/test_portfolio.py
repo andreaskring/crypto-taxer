@@ -127,3 +127,5 @@ class TestSell(unittest.TestCase):
 
 # Test fees
 # Error when selling more assets than available
+# Make function without side-effects
+# Test process_portfolio
