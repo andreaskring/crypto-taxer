@@ -77,7 +77,8 @@ def process_portfolio(
             profit[asset] += _profit
             loss[asset] += _loss
 
-        if eg[0].asset == "INJ" or eg[1].asset == "INJ":
+        coin_to_watch = "MOVR"
+        if eg[0].asset == coin_to_watch or eg[1].asset == coin_to_watch:
             print(30*"-")
             pprint(portfolio)
             print("profit:", profit)
